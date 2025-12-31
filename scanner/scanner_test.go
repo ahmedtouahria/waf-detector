@@ -68,7 +68,7 @@ func TestScanInvalidURL(t *testing.T) {
 
 	// Test with URL that will definitely fail - non-existent domain
 	results, _ := s.Scan(ctx, "https://this-domain-definitely-does-not-exist-12345.com")
-	
+
 	// At least one probe should have an error
 	hasError := false
 	for _, result := range results {
@@ -77,7 +77,7 @@ func TestScanInvalidURL(t *testing.T) {
 			break
 		}
 	}
-	
+
 	if !hasError {
 		t.Log("Warning: Expected at least one probe to fail for non-existent domain")
 		// Don't fail the test since network conditions vary
