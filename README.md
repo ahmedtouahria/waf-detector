@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Release](https://img.shields.io/github/release/wafw00f/waf-detector.svg)](https://github.com/wafw00f/waf-detector/releases)
 
-A fast, efficient, and professional Web Application Firewall (WAF) detection tool written in Go. This tool identifies the presence and type of WAF protecting web applications through intelligent probing and signature matching. This tool identifies the presence and type of WAF protecting web applications through intelligent probing and signature matching.
+A fast, efficient, and professional Web Application Firewall (WAF) detection tool written in Go. This tool identifies the presence and type of WAF protecting web applications through intelligent probing and signature matching.
 
 ## Features
 
@@ -31,17 +31,20 @@ A fast, efficient, and professional Web Application Firewall (WAF) detection too
 ### Build from Source
 
 ```bash
-# Clone using Make
-make build
-
-# Or build directly with Gotory
+# Clone the repository
 git clone https://github.com/wafw00f/waf-detector.git
 cd waf-detector
 
-# Build the binary
+# Build using Make
+make build
+
+# Or build directly with Go
 go build -o waf-detector
 
-# O
+# Or use the build script
+chmod +x build.sh
+./build.sh
+```
 
 ### Using Docker
 
@@ -61,9 +64,6 @@ docker-compose up
 ```bash
 make install
 # Binary will be installed to $GOPATH/bin
-```r use the build script
-chmod +x build.sh
-./build.sh
 ```
 
 ## Usage
@@ -87,7 +87,30 @@ Scan with custom threads and timeout:
 waf-detector -u https://example.com -t 20 --timeout 15
 ```
 
-Sav
+Save output to JSON file:
+```bash
+waf-detector -l targets.txt -o results.json -f json
+```
+
+Silent mode (only results):
+```bash
+waf-detector -u https://example.com --silent
+```
+
+Debug mode for verbose output:
+```bash
+waf-detector -u https://example.com --debug
+```
+
+Using a proxy:
+```bash
+waf-detector -u https://example.com --proxy http://127.0.0.1:8080
+```
+
+Custom User-Agent:
+```bash
+waf-detector -u https://example.com --user-agent "Mozilla/5.0 Custom Agent"
+```
 
 Use config file:
 ```bash
@@ -96,19 +119,17 @@ waf-detector -c configs/example.yml
 
 Generate HTML report:
 ```bash
-  -u, --url string          Single target URL
-  -l, --list string         File with list of URLs
-  -c, --config string       Config file path (YAML)
-  -t, --threads int         Number of concurrent workers (default: 10)
-  -o, --output string       Output file path
-  -f, --format string       Output format: txt | json | csv | html (default: txt)
-  --timeout int             HTTP timeout per request in seconds (default: 10)
-  --proxy string            HTTP proxy URL
-  --user-agent string       Custom User-Agent (default: "waf-detector/1.0")
-  --silent                  Only print results
-  --no-color                Disable colored output
-  --debug                   Verbose debug mode
-  -v, --version             Show version information
+waf-detector -l targets.txt -o report.html -f html
+```
+
+Generate CSV report:
+```bash
+waf-detector -l targets.txt -o results.csv -f csv
+```
+
+Show version:
+```bash
+waf-detector --version
 ```
 
 ## Configuration
@@ -157,41 +178,6 @@ Available environment variables:
 - `WAF_DETECTOR_SILENT`
 - `WAF_DETECTOR_NO_COLOR`
 - `WAF_DETECTOR_DEBUG`
-waf-detector -l targets.txt -o report.html -f html
-```
-
-Generate CSV report:
-```bash
-waf-detector -l targets.txt -o results.csv -f csv
-```
-
-Show version:
-```bash
-waf-detector --version
-```e output to JSON file:
-```bash
-waf-detector -l targets.txt -o results.json -f json
-```
-
-Silent mode (only results):
-```bash
-waf-detector -u https://example.com --silent
-```
-
-Debug mode for verbose output:
-```bash
-waf-detector -u https://example.com --debug
-```
-
-Using a proxy:
-```bash
-waf-detector -u https://example.com --proxy http://127.0.0.1:8080
-```
-
-Custom User-Agent:
-```bash
-waf-detector -u https://example.com --user-agent "Mozilla/5.0 Custom Agent"
-```
 
 ## Command-Line Options
 
@@ -199,15 +185,17 @@ waf-detector -u https://example.com --user-agent "Mozilla/5.0 Custom Agent"
 Options:
   -u, --url string          Single target URL
   -l, --list string         File with list of URLs
+  -c, --config string       Config file path (YAML)
   -t, --threads int         Number of concurrent workers (default: 10)
   -o, --output string       Output file path
-  -f, --format string       Output format: txt | json (default: txt)
+  -f, --format string       Output format: txt | json | csv | html (default: txt)
   --timeout int             HTTP timeout per request in seconds (default: 10)
   --proxy string            HTTP proxy URL
   --user-agent string       Custom User-Agent (default: "waf-detector/1.0")
   --silent                  Only print results
   --no-color                Disable colored output
   --debug                   Verbose debug mode
+  -v, --version             Show version information
 ```
 
 ## Output Format
@@ -237,7 +225,13 @@ Options:
 URL,WAF Detected,WAF Name,Confidence,Details,Error,Scan Time,Timestamp
 https://example.com,true,Cloudflare,95.00,Detected via headers,,125ms,2025-12-31T10:30:45Z
 ```
-version.go           # Version information
+
+## Project Structure
+
+```
+waf-detector/
+├── main.go              # Application entry point
+├── version.go           # Version information
 ├── go.mod               # Go module dependencies
 ├── go.sum               # Dependency checksums
 ├── Makefile             # Build automation
@@ -282,9 +276,7 @@ version.go           # Version information
 │       └── security.yml # Security scanning
 ├── docs/               # Documentation
 └── LICENSE             # MIT License
-│   └── scanner.go      # HTTP probing and scanning
-├── signatures/
-│   └── signatures.go   # WAF signature definitions
+```
 
 ## Development
 
@@ -333,13 +325,6 @@ make docker-build
 
 # Run Docker container
 make docker-run
-```
-├── output/
-│   └── output.go       # Output formatting and writing
-└── examples/
-    ├── targets.txt     # Example target list
-    ├── example-output.txt   # Example text output
-    └── example-output.json  # Example JSON output
 ```
 
 ## How It Works
