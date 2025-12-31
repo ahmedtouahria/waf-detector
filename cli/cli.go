@@ -8,17 +8,19 @@ import (
 )
 
 type Config struct {
-	URL        string
-	ListFile   string
-	Threads    int
-	OutputFile string
-	Format     string
-	Timeout    time.Duration
-	Proxy      string
-	UserAgent  string
-	Silent     bool
-	NoColor    bool
-	Debug      bool
+	URL         string
+	ListFile    string
+	ConfigFile  string
+	Threads     int
+	OutputFile  string
+	Format      string
+	Timeout     time.Duration
+	Proxy       string
+	UserAgent   string
+	Silent      bool
+	NoColor     bool
+	Debug       bool
+	ShowVersion bool
 }
 
 func ParseFlags() *Config {
@@ -28,12 +30,14 @@ func ParseFlags() *Config {
 	flag.StringVar(&config.URL, "url", "", "Single target URL")
 	flag.StringVar(&config.ListFile, "l", "", "File with list of URLs")
 	flag.StringVar(&config.ListFile, "list", "", "File with list of URLs")
+	flag.StringVar(&config.ConfigFile, "c", "", "Config file path (YAML)")
+	flag.StringVar(&config.ConfigFile, "config", "", "Config file path (YAML)")
 	flag.IntVar(&config.Threads, "t", 10, "Number of concurrent workers")
 	flag.IntVar(&config.Threads, "threads", 10, "Number of concurrent workers")
 	flag.StringVar(&config.OutputFile, "o", "", "Output file path")
 	flag.StringVar(&config.OutputFile, "output", "", "Output file path")
-	flag.StringVar(&config.Format, "f", "txt", "Output format: txt | json")
-	flag.StringVar(&config.Format, "format", "txt", "Output format: txt | json")
+	flag.StringVar(&config.Format, "f", "txt", "Output format: txt | json | csv | html")
+	flag.StringVar(&config.Format, "format", "txt", "Output format: txt | json | csv | html")
 
 	var timeoutSecs int
 	flag.IntVar(&timeoutSecs, "timeout", 10, "HTTP timeout per request (seconds)")
@@ -43,6 +47,8 @@ func ParseFlags() *Config {
 	flag.BoolVar(&config.Silent, "silent", false, "Only print results")
 	flag.BoolVar(&config.NoColor, "no-color", false, "Disable colored output")
 	flag.BoolVar(&config.Debug, "debug", false, "Verbose debug mode")
+	flag.BoolVar(&config.ShowVersion, "version", false, "Show version information")
+	flag.BoolVar(&config.ShowVersion, "v", false, "Show version information")
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "waf-detector - Web Application Firewall Detection Tool\n\n")
@@ -60,8 +66,8 @@ func ParseFlags() *Config {
 
 	config.Timeout = time.Duration(timeoutSecs) * time.Second
 
-	if config.Format != "txt" && config.Format != "json" {
-		fmt.Fprintf(os.Stderr, "Error: Invalid format '%s'. Use 'txt' or 'json'\n", config.Format)
+	if config.Format != "txt" && config.Format != "json" && config.Format != "csv" && config.Format != "html" {
+		fmt.Fprintf(os.Stderr, "Error: Invalid format '%s'. Use 'txt', 'json', 'csv', or 'html'\n", config.Format)
 		os.Exit(1)
 	}
 

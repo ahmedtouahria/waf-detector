@@ -10,8 +10,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/schollz/progressbar/v3"
 	"github.com/wafw00f/waf-detector/cli"
 	"github.com/wafw00f/waf-detector/detector"
+	"github.com/wafw00f/waf-detector/logger"
 	"github.com/wafw00f/waf-detector/output"
 	"github.com/wafw00f/waf-detector/scanner"
 )
@@ -19,15 +21,24 @@ import (
 func main() {
 	config := cli.ParseFlags()
 
+	if config.ShowVersion {
+		fmt.Printf("waf-detector version %s\n", Version)
+		fmt.Printf("Commit: %s\n", Commit)
+		fmt.Printf("Build Date: %s\n", BuildDate)
+		os.Exit(0)
+	}
+
+	// Initialize logger
+	logger.Init(config.Debug, config.Silent)
+
 	if config.Debug {
-		fmt.Println("[DEBUG] Starting waf-detector")
-		fmt.Printf("[DEBUG] Config: %+v\n", config)
+		logger.Debugf("Starting waf-detector version %s (commit: %s)", Version, Commit)
+		logger.Debugf("Config: %+v", config)
 	}
 
 	targets := collectTargets(config)
 	if len(targets) == 0 {
-		fmt.Fprintln(os.Stderr, "Error: No targets specified. Use -u or -l")
-		os.Exit(1)
+		logger.Fatal("No targets specified. Use -u or -l")
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -38,7 +49,7 @@ func main() {
 	go func() {
 		<-sigChan
 		if !config.Silent {
-			fmt.Println("\n[!] Interrupt received, shutting down...")
+			logger.Warn("\nInterrupt received, shutting down...")
 		}
 		cancel()
 	}()
@@ -46,8 +57,7 @@ func main() {
 	results := processTargets(ctx, targets, config)
 
 	if err := output.WriteResults(results, config); err != nil {
-		fmt.Fprintf(os.Stderr, "Error writing output: %v\n", err)
-		os.Exit(1)
+		logger.Fatalf("Error writing output: %v", err)
 	}
 }
 
@@ -61,8 +71,7 @@ func collectTargets(config *cli.Config) []string {
 	if config.ListFile != "" {
 		file, err := os.Open(config.ListFile)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error opening list file: %v\n", err)
-			os.Exit(1)
+			logger.Fatalf("Error opening list file: %v", err)
 		}
 		defer file.Close()
 
@@ -75,9 +84,10 @@ func collectTargets(config *cli.Config) []string {
 		}
 
 		if err := scanner.Err(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error reading list file: %v\n", err)
-			os.Exit(1)
+			logger.Fatalf("Error reading list file: %v", err)
 		}
+
+		logger.Infof("Loaded %d targets from file", len(targets))
 	}
 
 	return targets
@@ -99,6 +109,20 @@ func processTargets(ctx context.Context, targets []string, config *cli.Config) [
 	s := scanner.NewScanner(config)
 	d := detector.NewDetector()
 
+	// Create progress bar for multiple targets
+	var bar *progressbar.ProgressBar
+	if len(targets) > 1 && !config.Silent {
+		bar = progressbar.NewOptions(len(targets),
+			progressbar.OptionSetDescription("Scanning"),
+			progressbar.OptionSetWidth(40),
+			progressbar.OptionShowCount(),
+			progressbar.OptionShowIts(),
+			progressbar.OptionSetPredictTime(true),
+			progressbar.OptionThrottle(100*time.Millisecond),
+			progressbar.OptionClearOnFinish(),
+		)
+	}
+
 	for i := 0; i < config.Threads; i++ {
 		wg.Add(1)
 		go func(workerID int) {
@@ -109,7 +133,7 @@ func processTargets(ctx context.Context, targets []string, config *cli.Config) [
 					return
 				default:
 					if config.Debug {
-						fmt.Printf("[DEBUG] Worker %d processing: %s\n", workerID, target)
+						logger.Debugf("Worker %d processing: %s", workerID, target)
 					}
 					result := processTarget(ctx, target, s, d, config)
 					mu.Lock()
@@ -117,7 +141,11 @@ func processTargets(ctx context.Context, targets []string, config *cli.Config) [
 					mu.Unlock()
 
 					if !config.Silent {
-						output.PrintResult(result, config)
+						if bar != nil {
+							bar.Add(1)
+						} else {
+							output.PrintResult(result, config)
+						}
 					}
 				}
 			}
@@ -125,6 +153,15 @@ func processTargets(ctx context.Context, targets []string, config *cli.Config) [
 	}
 
 	wg.Wait()
+
+	// Print results after progress bar completes
+	if bar != nil && !config.Silent {
+		for _, result := range results {
+			output.PrintResult(result, config)
+		}
+		output.PrintSummary(results, config)
+	}
+
 	return results
 }
 

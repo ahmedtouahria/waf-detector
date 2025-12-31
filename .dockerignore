@@ -1,0 +1,31 @@
+# Docker ignore patterns
+.git
+.gitignore
+.github
+.vscode
+.idea
+
+# Build artifacts
+bin/
+dist/
+build/
+*.exe
+*.test
+*.out
+
+# Documentation
+*.md
+docs/
+examples/
+
+# CI/CD
+.goreleaser.yml
+Makefile
+
+# Tests
+*_test.go
+coverage.*
+
+# Environment
+.env
+.env.*

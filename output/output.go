@@ -1,8 +1,10 @@
 package output
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"os"
 	"time"
 
@@ -54,28 +56,96 @@ func WriteResults(results []Result, config *cli.Config) error {
 	}
 	defer file.Close()
 
-	if config.Format == "json" {
-		summary := calculateSummary(results)
-		output := JSONOutput{
-			Results: results,
-			Summary: summary,
-			Time:    time.Now(),
-		}
+	switch config.Format {
+	case "json":
+		return writeJSON(file, results)
+	case "csv":
+		return writeCSV(file, results)
+	case "html":
+		return writeHTML(file, results)
+	default: // txt
+		return writeText(file, results, config)
+	}
+}
 
-		encoder := json.NewEncoder(file)
-		encoder.SetIndent("", "  ")
-		if err := encoder.Encode(output); err != nil {
-			return fmt.Errorf("failed to encode JSON: %w", err)
+func writeJSON(file *os.File, results []Result) error {
+	summary := calculateSummary(results)
+	output := JSONOutput{
+		Results: results,
+		Summary: summary,
+		Time:    time.Now(),
+	}
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(output); err != nil {
+		return fmt.Errorf("failed to encode JSON: %w", err)
+	}
+	return nil
+}
+
+func writeCSV(file *os.File, results []Result) error {
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	// Write header
+	header := []string{"URL", "WAF Detected", "WAF Name", "Confidence", "Details", "Error", "Scan Time", "Timestamp"}
+	if err := writer.Write(header); err != nil {
+		return fmt.Errorf("failed to write CSV header: %w", err)
+	}
+
+	// Write rows
+	for _, result := range results {
+		row := []string{
+			result.URL,
+			fmt.Sprintf("%t", result.WAFFound),
+			result.WAFName,
+			fmt.Sprintf("%.2f", result.Confidence),
+			result.Details,
+			result.Error,
+			result.ScanTime.String(),
+			result.Timestamp.Format(time.RFC3339),
 		}
-	} else {
-		for _, result := range results {
-			line := formatTextResult(result, config)
-			if _, err := file.WriteString(line + "\n"); err != nil {
-				return fmt.Errorf("failed to write to file: %w", err)
-			}
+		if err := writer.Write(row); err != nil {
+			return fmt.Errorf("failed to write CSV row: %w", err)
 		}
 	}
 
+	return nil
+}
+
+func writeHTML(file *os.File, results []Result) error {
+	summary := calculateSummary(results)
+
+	data := struct {
+		Results []Result
+		Summary Summary
+		Time    string
+	}{
+		Results: results,
+		Summary: summary,
+		Time:    time.Now().Format(time.RFC3339),
+	}
+
+	tmpl, err := template.New("report").Parse(htmlTemplate)
+	if err != nil {
+		return fmt.Errorf("failed to parse HTML template: %w", err)
+	}
+
+	if err := tmpl.Execute(file, data); err != nil {
+		return fmt.Errorf("failed to execute HTML template: %w", err)
+	}
+
+	return nil
+}
+
+func writeText(file *os.File, results []Result, config *cli.Config) error {
+	for _, result := range results {
+		line := formatTextResult(result, config)
+		if _, err := file.WriteString(line + "\n"); err != nil {
+			return fmt.Errorf("failed to write to file: %w", err)
+		}
+	}
 	return nil
 }
 

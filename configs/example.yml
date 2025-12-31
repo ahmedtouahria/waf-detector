@@ -1,0 +1,33 @@
+# WAF Detector Configuration File
+
+# List of targets to scan
+targets:
+  - https://example.com
+  - https://cloudflare.com
+
+# Number of concurrent workers (default: 10)
+threads: 20
+
+# HTTP timeout per request in seconds (default: 10)
+timeout: 15s
+
+# HTTP proxy URL (optional)
+# proxy: http://127.0.0.1:8080
+
+# Custom User-Agent (default: waf-detector/1.0)
+user_agent: "waf-detector/1.0"
+
+# Output file path (optional)
+output_file: "results.json"
+
+# Output format: txt | json (default: txt)
+format: json
+
+# Only print results (default: false)
+silent: false
+
+# Disable colored output (default: false)
+no_color: false
+
+# Verbose debug mode (default: false)
+debug: false

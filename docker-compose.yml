@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  waf-detector:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VERSION: ${VERSION:-dev}
+        COMMIT: ${COMMIT:-unknown}
+        BUILD_DATE: ${BUILD_DATE:-unknown}
+    image: waf-detector:latest
+    container_name: waf-detector
+    volumes:
+      - ./examples:/app/examples:ro
+      - ./output:/app/output
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    command: -l /app/examples/targets.txt -o /app/output/results.json -f json
+    networks:
+      - waf-detector-net
+
+networks:
+  waf-detector-net:
+    driver: bridge

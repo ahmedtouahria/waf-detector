@@ -1,17 +1,26 @@
 # waf-detector
 
-A fast and efficient Web Application Firewall (WAF) detection tool written in Go. This tool identifies the presence and type of WAF protecting web applications through intelligent probing and signature matching.
+[![CI](https://github.com/wafw00f/waf-detector/workflows/CI/badge.svg)](https://github.com/wafw00f/waf-detector/actions)
+[![Go Report Card](https://goreportcard.com/badge/github.com/wafw00f/waf-detector)](https://goreportcard.com/report/github.com/wafw00f/waf-detector)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Release](https://img.shields.io/github/release/wafw00f/waf-detector.svg)](https://github.com/wafw00f/waf-detector/releases)
+
+A fast, efficient, and professional Web Application Firewall (WAF) detection tool written in Go. This tool identifies the presence and type of WAF protecting web applications through intelligent probing and signature matching. This tool identifies the presence and type of WAF protecting web applications through intelligent probing and signature matching.
 
 ## Features
 
 - 🚀 **Fast & Concurrent**: Multi-threaded scanning with configurable worker pools
 - 🎯 **Accurate Detection**: Uses multiple probe types (normal, SQLi, XSS, malformed) for reliable WAF identification
-- 📊 **Multiple Output Formats**: Support for both text and JSON output formats
+- 📊 **Multiple Output Formats**: Support for text, JSON, CSV, and HTML output formats
 - 🔍 **Signature-Based Fingerprinting**: Identifies specific WAF vendors based on response patterns
-- 🌐 **Flexible Target Input**: Scan single URLs or bulk targets from file
-- 🎨 **Colored Output**: Enhanced terminal output with color support (can be disabled)
-- 🔧 **Configurable**: Extensive configuration options including timeout, proxy, user-agent, and more
+- 🌐 **Flexible Target Input**: Scan single URLs, bulk targets from file, or use config files
+- 🎨 **Beautiful Output**: Enhanced terminal output with colors and progress bars
+- ⚙️ **Configurable**: Extensive configuration via flags, config files, or environment variables
+- 🔧 **Professional Logging**: Structured logging with multiple log levels
 - 🛡️ **Graceful Shutdown**: Handles interrupts cleanly with context-based cancellation
+- 🐳 **Docker Support**: Ready-to-use Docker images for containerized deployment
+- 📈 **Progress Tracking**: Real-time progress bars for bulk scanning operations
+- ✅ **Well Tested**: Comprehensive test suite with high coverage
 
 ## Installation
 
@@ -22,14 +31,37 @@ A fast and efficient Web Application Firewall (WAF) detection tool written in Go
 ### Build from Source
 
 ```bash
-# Clone the repository
+# Clone using Make
+make build
+
+# Or build directly with Gotory
 git clone https://github.com/wafw00f/waf-detector.git
 cd waf-detector
 
 # Build the binary
 go build -o waf-detector
 
-# Or use the build script
+# O
+
+### Using Docker
+
+```bash
+# Build Docker image
+docker build -t waf-detector .
+
+# Run with Docker
+docker run --rm waf-detector -u https://example.com
+
+# Or use docker-compose
+docker-compose up
+```
+
+### Install via Make
+
+```bash
+make install
+# Binary will be installed to $GOPATH/bin
+```r use the build script
 chmod +x build.sh
 ./build.sh
 ```
@@ -55,7 +87,88 @@ Scan with custom threads and timeout:
 waf-detector -u https://example.com -t 20 --timeout 15
 ```
 
-Save output to JSON file:
+Sav
+
+Use config file:
+```bash
+waf-detector -c configs/example.yml
+```
+
+Generate HTML report:
+```bash
+  -u, --url string          Single target URL
+  -l, --list string         File with list of URLs
+  -c, --config string       Config file path (YAML)
+  -t, --threads int         Number of concurrent workers (default: 10)
+  -o, --output string       Output file path
+  -f, --format string       Output format: txt | json | csv | html (default: txt)
+  --timeout int             HTTP timeout per request in seconds (default: 10)
+  --proxy string            HTTP proxy URL
+  --user-agent string       Custom User-Agent (default: "waf-detector/1.0")
+  --silent                  Only print results
+  --no-color                Disable colored output
+  --debug                   Verbose debug mode
+  -v, --version             Show version information
+```
+
+## Configuration
+
+### Config File (YAML)
+
+Create a `config.yml` file:
+
+```yaml
+targets:
+  - https://example.com
+  - https://cloudflare.com
+
+threads: 20
+timeout: 15s
+output_file: "results.json"
+format: json
+debug: false
+```
+
+Then run:
+```bash
+waf-detector -c config.yml
+```
+
+### Environment Variables
+
+You can also use environment variables:
+
+```bash
+export WAF_DETECTOR_THREADS=20
+export WAF_DETECTOR_TIMEOUT=15
+export WAF_DETECTOR_FORMAT=json
+export WAF_DETECTOR_DEBUG=true
+
+waf-detector -u https://example.com
+```
+
+Available environment variables:
+- `WAF_DETECTOR_THREADS`
+- `WAF_DETECTOR_TIMEOUT`
+- `WAF_DETECTOR_PROXY`
+- `WAF_DETECTOR_USER_AGENT`
+- `WAF_DETECTOR_OUTPUT`
+- `WAF_DETECTOR_FORMAT`
+- `WAF_DETECTOR_SILENT`
+- `WAF_DETECTOR_NO_COLOR`
+- `WAF_DETECTOR_DEBUG`
+waf-detector -l targets.txt -o report.html -f html
+```
+
+Generate CSV report:
+```bash
+waf-detector -l targets.txt -o results.csv -f csv
+```
+
+Show version:
+```bash
+waf-detector --version
+```e output to JSON file:
 ```bash
 waf-detector -l targets.txt -o results.json -f json
 ```
@@ -119,21 +232,108 @@ Options:
 }
 ```
 
-## Project Structure
-
+### CSV Output
+```csv
+URL,WAF Detected,WAF Name,Confidence,Details,Error,Scan Time,Timestamp
+https://example.com,true,Cloudflare,95.00,Detected via headers,,125ms,2025-12-31T10:30:45Z
 ```
-.
-├── main.go              # Main application entry point
+version.go           # Version information
 ├── go.mod               # Go module dependencies
+├── go.sum               # Dependency checksums
+├── Makefile             # Build automation
+├── Dockerfile           # Docker image configuration
+├── docker-compose.yml   # Docker Compose setup
 ├── build.sh             # Build script
+├── .golangci.yml        # Linter configuration
+├── .goreleaser.yml      # Release configuration
 ├── cli/
-│   └── cli.go          # Command-line interface and configuration
+│   ├── cli.go          # Command-line interface and configuration
+│   └── cli_test.go     # CLI tests
 ├── detector/
-│   └── detector.go     # WAF detection logic
+│   ├── detector.go     # WAF detection logic
+│   └── detector_test.go # Detection tests
 ├── scanner/
+│   ├── scanner.go      # HTTP probing and scanning
+│   └── scanner_test.go # Scanner tests
+├── signatures/
+│   └── signatures.go   # WAF signature definitions
+├── output/
+│   ├── output.go       # Output formatting and writing
+│   ├── template.go     # HTML template
+│   └── output_test.go  # Output tests
+├── logger/
+│   ├── logger.go       # Structured logging
+│   └── logger_test.go  # Logger tests
+├── errors/
+│   ├── errors.go       # Custom error types
+│   └── errors_test.go  # Error tests
+├── config/
+│   └── config.go       # Config file support
+├── configs/
+│   └── example.yml     # Example configuration
+├── examples/
+│   ├── targets.txt     # Example target list
+│   ├── example-output.txt
+│   └── example-output.json
+├── .github/
+│   └── workflows/
+│       ├── ci.yml      # CI pipeline
+│       ├── release.yml # Release automation
+│       └── security.yml # Security scanning
+├── docs/               # Documentation
+└── LICENSE             # MIT License
 │   └── scanner.go      # HTTP probing and scanning
 ├── signatures/
 │   └── signatures.go   # WAF signature definitions
+
+## Development
+
+### Running Tests
+
+```bash
+# Run all tests
+make test
+
+# Run tests with coverage
+make test-coverage
+
+# Run benchmarks
+make bench
+```
+
+### Linting
+
+```bash
+# Run linter
+make lint
+
+# Format code
+make fmt
+```
+
+### Building for Multiple Platforms
+
+```bash
+# Build for all platforms
+make release
+
+# Builds will be in bin/ directory:
+# - waf-detector-linux-amd64
+# - waf-detector-linux-arm64
+# - waf-detector-darwin-amd64
+# - waf-detector-darwin-arm64
+# - waf-detector-windows-amd64.exe
+```
+
+### Using Docker for Development
+
+```bash
+# Build Docker image
+make docker-build
+
+# Run Docker container
+make docker-run
+```
 ├── output/
 │   └── output.go       # Output formatting and writing
 └── examples/
