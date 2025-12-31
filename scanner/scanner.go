@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/wafw00f/waf-detector/cli"
+	"github.com/ahmedtouahria/waf-detector/cli"
 )
 
 type ProbeType string

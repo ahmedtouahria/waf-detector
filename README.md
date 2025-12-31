@@ -1,9 +1,9 @@
 # waf-detector
 
-[![CI](https://github.com/wafw00f/waf-detector/workflows/CI/badge.svg)](https://github.com/wafw00f/waf-detector/actions)
-[![Go Report Card](https://goreportcard.com/badge/github.com/wafw00f/waf-detector)](https://goreportcard.com/report/github.com/wafw00f/waf-detector)
+[![CI](https://github.com/ahmedtouahria/waf-detector/workflows/CI/badge.svg)](https://github.com/ahmedtouahria/waf-detector/actions)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ahmedtouahria/waf-detector)](https://goreportcard.com/report/github.com/ahmedtouahria/waf-detector)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Release](https://img.shields.io/github/release/wafw00f/waf-detector.svg)](https://github.com/wafw00f/waf-detector/releases)
+[![Release](https://img.shields.io/github/release/ahmedtouahria/waf-detector.svg)](https://github.com/ahmedtouahria/waf-detector/releases)
 
 A fast, efficient, and professional Web Application Firewall (WAF) detection tool written in Go. This tool identifies the presence and type of WAF protecting web applications through intelligent probing and signature matching.
 
@@ -32,7 +32,7 @@ A fast, efficient, and professional Web Application Firewall (WAF) detection too
 
 ```bash
 # Clone the repository
-git clone https://github.com/wafw00f/waf-detector.git
+git clone https://github.com/ahmedtouahria/waf-detector.git
 cd waf-detector
 
 # Build using Make
@@ -368,4 +368,4 @@ This tool is intended for security professionals and researchers to test their o
 
 ## Credits
 
-Inspired by the original WAFW00F project.
+Inspired by the original ahmedtouahria project.

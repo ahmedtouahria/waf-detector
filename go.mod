@@ -1,4 +1,4 @@
-module github.com/wafw00f/waf-detector
+module github.com/ahmedtouahria/waf-detector
 
 go 1.22
 

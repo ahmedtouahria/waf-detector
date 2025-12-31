@@ -3,7 +3,7 @@ package signatures
 import (
 	"strings"
 
-	"github.com/wafw00f/waf-detector/scanner"
+	"github.com/ahmedtouahria/waf-detector/scanner"
 )
 
 type Signature interface {

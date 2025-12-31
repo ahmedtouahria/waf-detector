@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/wafw00f/waf-detector/scanner"
+	"github.com/ahmedtouahria/waf-detector/scanner"
 )
 
 func TestNewDetector(t *testing.T) {

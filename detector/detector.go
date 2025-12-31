@@ -3,8 +3,8 @@ package detector
 import (
 	"strings"
 
-	"github.com/wafw00f/waf-detector/scanner"
-	"github.com/wafw00f/waf-detector/signatures"
+	"github.com/ahmedtouahria/waf-detector/scanner"
+	"github.com/ahmedtouahria/waf-detector/signatures"
 )
 
 type Detection struct {

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/wafw00f/waf-detector/cli"
+	"github.com/ahmedtouahria/waf-detector/cli"
 )
 
 func TestNewScanner(t *testing.T) {

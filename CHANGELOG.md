@@ -44,5 +44,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Silent mode
 - Graceful shutdown
 
-[Unreleased]: https://github.com/wafw00f/waf-detector/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/wafw00f/waf-detector/releases/tag/v1.0.0
+[Unreleased]: https://github.com/ahmedtouahria/waf-detector/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/ahmedtouahria/waf-detector/releases/tag/v1.0.0

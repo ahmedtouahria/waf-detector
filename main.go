@@ -10,12 +10,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/ahmedtouahria/waf-detector/cli"
+	"github.com/ahmedtouahria/waf-detector/detector"
+	"github.com/ahmedtouahria/waf-detector/logger"
+	"github.com/ahmedtouahria/waf-detector/output"
+	"github.com/ahmedtouahria/waf-detector/scanner"
 	"github.com/schollz/progressbar/v3"
-	"github.com/wafw00f/waf-detector/cli"
-	"github.com/wafw00f/waf-detector/detector"
-	"github.com/wafw00f/waf-detector/logger"
-	"github.com/wafw00f/waf-detector/output"
-	"github.com/wafw00f/waf-detector/scanner"
 )
 
 func main() {

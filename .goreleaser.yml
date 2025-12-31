@@ -61,7 +61,7 @@ changelog:
 
 release:
   github:
-    owner: wafw00f
+    owner: ahmedtouahria
     name: waf-detector
   draft: false
   prerelease: auto

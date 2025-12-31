@@ -51,7 +51,7 @@ To add a new WAF signature:
 
 ```bash
 # Clone the repository
-git clone https://github.com/wafw00f/waf-detector.git
+git clone https://github.com/ahmedtouahria/waf-detector.git
 cd waf-detector
 
 # Install dependencies
