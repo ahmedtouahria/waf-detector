@@ -1,0 +1,10 @@
+[++] https://example.com - Cloudflare (90% confidence) [1.23s]
+[++] https://cloudflare.com - Cloudflare (95% confidence) [0.87s]
+[++] https://aws.amazon.com - Amazon CloudFront (80% confidence) [1.45s]
+[--] https://github.com - No WAF detected
+[--] https://stackoverflow.com - No WAF detected
+
+=== Scan Summary ===
+Total scanned:  5
+WAFs detected:  3
+Errors:         0

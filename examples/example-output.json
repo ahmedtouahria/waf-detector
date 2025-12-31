@@ -1,0 +1,51 @@
+{
+  "results": [
+    {
+      "url": "https://example.com",
+      "waf_found": true,
+      "waf_name": "Cloudflare",
+      "confidence": 0.9,
+      "details": "WAF identified based on response patterns",
+      "scan_time": 1230000000,
+      "timestamp": "2025-12-31T10:00:00Z"
+    },
+    {
+      "url": "https://cloudflare.com",
+      "waf_found": true,
+      "waf_name": "Cloudflare",
+      "confidence": 0.95,
+      "details": "WAF identified based on response patterns",
+      "scan_time": 870000000,
+      "timestamp": "2025-12-31T10:00:01Z"
+    },
+    {
+      "url": "https://aws.amazon.com",
+      "waf_found": true,
+      "waf_name": "Amazon CloudFront",
+      "confidence": 0.8,
+      "details": "WAF identified based on response patterns",
+      "scan_time": 1450000000,
+      "timestamp": "2025-12-31T10:00:02Z"
+    },
+    {
+      "url": "https://github.com",
+      "waf_found": false,
+      "details": "No WAF-like behavior detected",
+      "scan_time": 980000000,
+      "timestamp": "2025-12-31T10:00:03Z"
+    },
+    {
+      "url": "https://stackoverflow.com",
+      "waf_found": false,
+      "details": "No WAF-like behavior detected",
+      "scan_time": 1100000000,
+      "timestamp": "2025-12-31T10:00:04Z"
+    }
+  ],
+  "summary": {
+    "total_scanned": 5,
+    "wafs_detected": 3,
+    "errors": 0
+  },
+  "scan_time": "2025-12-31T10:00:05Z"
+}
