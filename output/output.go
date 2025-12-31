@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/wafw00f/wafw00f-go/cli"
+	"github.com/wafw00f/waf-detector/cli"
 )
 
 type Result struct {

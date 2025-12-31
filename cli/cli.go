@@ -39,21 +39,21 @@ func ParseFlags() *Config {
 	flag.IntVar(&timeoutSecs, "timeout", 10, "HTTP timeout per request (seconds)")
 
 	flag.StringVar(&config.Proxy, "proxy", "", "HTTP proxy URL")
-	flag.StringVar(&config.UserAgent, "user-agent", "wafw00f-go/1.0", "Custom User-Agent")
+	flag.StringVar(&config.UserAgent, "user-agent", "waf-detector/1.0", "Custom User-Agent")
 	flag.BoolVar(&config.Silent, "silent", false, "Only print results")
 	flag.BoolVar(&config.NoColor, "no-color", false, "Disable colored output")
 	flag.BoolVar(&config.Debug, "debug", false, "Verbose debug mode")
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "wafw00f-go - Web Application Firewall Detection Tool\n\n")
+		fmt.Fprintf(os.Stderr, "waf-detector - Web Application Firewall Detection Tool\n\n")
 		fmt.Fprintf(os.Stderr, "Usage:\n")
-		fmt.Fprintf(os.Stderr, "  wafw00f-go [options]\n\n")
+		fmt.Fprintf(os.Stderr, "  waf-detector [options]\n\n")
 		fmt.Fprintf(os.Stderr, "Options:\n")
 		flag.PrintDefaults()
 		fmt.Fprintf(os.Stderr, "\nExamples:\n")
-		fmt.Fprintf(os.Stderr, "  wafw00f-go -u https://example.com\n")
-		fmt.Fprintf(os.Stderr, "  wafw00f-go -l targets.txt -t 20 -o results.json -f json\n")
-		fmt.Fprintf(os.Stderr, "  wafw00f-go -u https://example.com --debug\n")
+		fmt.Fprintf(os.Stderr, "  waf-detector -u https://example.com\n")
+		fmt.Fprintf(os.Stderr, "  waf-detector -l targets.txt -t 20 -o results.json -f json\n")
+		fmt.Fprintf(os.Stderr, "  waf-detector -u https://example.com --debug\n")
 	}
 
 	flag.Parse()

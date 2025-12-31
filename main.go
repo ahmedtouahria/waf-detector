@@ -10,17 +10,17 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/wafw00f/wafw00f-go/cli"
-	"github.com/wafw00f/wafw00f-go/detector"
-	"github.com/wafw00f/wafw00f-go/output"
-	"github.com/wafw00f/wafw00f-go/scanner"
+	"github.com/wafw00f/waf-detector/cli"
+	"github.com/wafw00f/waf-detector/detector"
+	"github.com/wafw00f/waf-detector/output"
+	"github.com/wafw00f/waf-detector/scanner"
 )
 
 func main() {
 	config := cli.ParseFlags()
 
 	if config.Debug {
-		fmt.Println("[DEBUG] Starting wafw00f-go")
+		fmt.Println("[DEBUG] Starting waf-detector")
 		fmt.Printf("[DEBUG] Config: %+v\n", config)
 	}
 
