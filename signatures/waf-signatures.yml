@@ -351,3 +351,386 @@ signatures:
         case_insensitive: true
         status_codes: [403]
         confidence: 0.2
+
+  # Google Cloud Armor
+  - name: "Google Cloud Armor"
+    enabled: true
+    description: "Google Cloud Armor WAF"
+    vendor: "Google Cloud"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-Cloud-Trace-Context"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "Via"
+        condition: contains
+        value: "google"
+        case_insensitive: true
+        confidence: 0.25
+      - type: body
+        condition: contains
+        values: ["google cloud armor", "error 403", "access denied"]
+        case_insensitive: true
+        status_codes: [403]
+        confidence: 0.3
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "ghs"
+        case_insensitive: true
+        confidence: 0.25
+
+  # Barracuda WAF
+  - name: "Barracuda WAF"
+    enabled: true
+    description: "Barracuda Web Application Firewall"
+    vendor: "Barracuda Networks"
+    category: "appliance"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: cookie
+        key: "barra_counter_session"
+        condition: contains
+        confidence: 0.45
+      - type: cookie
+        key: "BNI__BARRACUDA_LB_COOKIE"
+        condition: contains
+        confidence: 0.4
+      - type: body
+        condition: contains
+        value: "barracuda"
+        case_insensitive: true
+        confidence: 0.3
+      - type: header
+        key: "X-Barracuda-"
+        condition: exists
+        confidence: 0.35
+
+  # Fortinet FortiWeb
+  - name: "FortiWeb"
+    enabled: true
+    description: "Fortinet FortiWeb Web Application Firewall"
+    vendor: "Fortinet"
+    category: "appliance"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: cookie
+        key: "FORTIWAFSID"
+        condition: contains
+        confidence: 0.45
+      - type: body
+        condition: contains
+        values: ["fortiweb", "fortigate"]
+        case_insensitive: true
+        confidence: 0.35
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "fortiweb"
+        case_insensitive: true
+        confidence: 0.4
+
+  # Citrix NetScaler AppFirewall
+  - name: "Citrix NetScaler"
+    enabled: true
+    description: "Citrix NetScaler Application Firewall"
+    vendor: "Citrix Systems"
+    category: "appliance"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: cookie
+        key: "ns_af"
+        condition: contains
+        confidence: 0.4
+      - type: cookie
+        key: "citrix_ns_id"
+        condition: contains
+        confidence: 0.4
+      - type: header
+        key: "Via"
+        condition: contains
+        value: "NS-CACHE"
+        case_insensitive: true
+        confidence: 0.35
+      - type: body
+        condition: contains
+        value: "netscaler"
+        case_insensitive: true
+        confidence: 0.25
+      - type: cookie
+        key: "NSC_"
+        condition: contains
+        confidence: 0.3
+
+  # Reblaze WAF
+  - name: "Reblaze"
+    enabled: true
+    description: "Reblaze Cloud-Based WAF"
+    vendor: "Reblaze"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-Reblaze-Request-ID"
+        condition: exists
+        confidence: 0.45
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "reblaze"
+        case_insensitive: true
+        confidence: 0.35
+      - type: body
+        condition: contains
+        values: ["reblaze", "rbzid"]
+        case_insensitive: true
+        confidence: 0.3
+
+  # Radware Cloud WAF
+  - name: "Radware AppWall"
+    enabled: true
+    description: "Radware AppWall Web Application Firewall"
+    vendor: "Radware"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-ADC-"
+        condition: exists
+        confidence: 0.35
+      - type: cookie
+        key: "visid_incap"
+        condition: contains
+        confidence: 0.3
+      - type: body
+        condition: contains
+        values: ["radware", "appwall"]
+        case_insensitive: true
+        confidence: 0.35
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "radware"
+        case_insensitive: true
+        confidence: 0.4
+
+  # Palo Alto Prisma Cloud WAAS
+  - name: "Prisma Cloud WAAS"
+    enabled: true
+    description: "Palo Alto Prisma Cloud Web Application and API Security"
+    vendor: "Palo Alto Networks"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-Prisma-"
+        condition: exists
+        confidence: 0.35
+      - type: body
+        condition: contains
+        values: ["prisma cloud", "twistlock", "request blocked"]
+        case_insensitive: true
+        status_codes: [403]
+        confidence: 0.3
+      - type: header
+        key: "X-Twistlock-"
+        condition: exists
+        confidence: 0.35
+
+  # Check Point CloudGuard WAF
+  - name: "CloudGuard WAF"
+    enabled: true
+    description: "Check Point CloudGuard Web Application Firewall"
+    vendor: "Check Point"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: cookie
+        key: "cp_"
+        condition: contains
+        confidence: 0.35
+      - type: header
+        key: "X-CV-"
+        condition: exists
+        confidence: 0.3
+      - type: body
+        condition: contains
+        values: ["cloudguard", "check point", "access denied"]
+        case_insensitive: true
+        status_codes: [403]
+        confidence: 0.3
+      - type: header
+        key: "Server"
+        condition: contains
+        values: ["cloudguard", "checkpoint"]
+        case_insensitive: true
+        confidence: 0.35
+
+  # DataDome Bot Protection
+  - name: "DataDome"
+    enabled: true
+    description: "DataDome Bot Protection and WAF"
+    vendor: "DataDome"
+    category: "service"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: cookie
+        key: "datadome"
+        condition: contains
+        confidence: 0.45
+      - type: header
+        key: "X-DataDome"
+        condition: exists
+        confidence: 0.4
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "datadome"
+        case_insensitive: true
+        confidence: 0.35
+      - type: body
+        condition: contains
+        values: ["datadome", "captcha", "bot detection"]
+        case_insensitive: true
+        status_codes: [403, 405]
+        confidence: 0.3
+
+  # Kasada Bot Defense
+  - name: "Kasada"
+    enabled: true
+    description: "Kasada Bot Defense Platform"
+    vendor: "Kasada"
+    category: "service"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "x-kpsdk-ct"
+        condition: exists
+        confidence: 0.45
+      - type: header
+        key: "x-kpsdk-"
+        condition: exists
+        confidence: 0.4
+      - type: body
+        condition: contains
+        value: "kasada"
+        case_insensitive: true
+        confidence: 0.35
+      - type: header
+        key: "x-kpsdk-v"
+        condition: exists
+        confidence: 0.35
+
+  # StackPath WAF
+  - name: "StackPath"
+    enabled: true
+    description: "StackPath Edge Security WAF"
+    vendor: "StackPath"
+    category: "cdn"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-SP-Shield"
+        condition: exists
+        confidence: 0.4
+      - type: header
+        key: "X-StackPath-Shield"
+        condition: exists
+        confidence: 0.4
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "stackpath"
+        case_insensitive: true
+        confidence: 0.35
+      - type: body
+        condition: contains
+        value: "stackpath"
+        case_insensitive: true
+        confidence: 0.25
+
+  # Gcore WAF
+  - name: "Gcore WAF"
+    enabled: true
+    description: "Gcore Web Application Firewall"
+    vendor: "Gcore"
+    category: "cdn"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-Gcore-Cache"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "gcore"
+        case_insensitive: true
+        confidence: 0.35
+      - type: body
+        condition: contains
+        values: ["gcore", "access denied"]
+        case_insensitive: true
+        status_codes: [403]
+        confidence: 0.3
+      - type: header
+        key: "X-Gcore-"
+        condition: exists
+        confidence: 0.3
+
+  # Verizon Digital Media WAF
+  - name: "Verizon Digital Media"
+    enabled: true
+    description: "Verizon Digital Media Services (EdgeCast) WAF"
+    vendor: "Verizon Media"
+    category: "cdn"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-EC-Custom-Error"
+        condition: exists
+        confidence: 0.45
+      - type: header
+        key: "Server"
+        condition: contains
+        values: ["ECAcc", "ECD", "edgecast"]
+        case_insensitive: true
+        confidence: 0.4
+      - type: header
+        key: "X-EdgeConnect-MidMile-RTT"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "X-EdgeConnect-Origin-MEX-Latency"
+        condition: exists
+        confidence: 0.35
+      - type: body
+        condition: contains
+        values: ["edgecast", "verizon digital media", "reference number"]
+        case_insensitive: true
+        status_codes: [403, 400]
+        confidence: 0.3
+      - type: header
+        key: "X-EC-Debug"
+        condition: exists
+        confidence: 0.3
+      - type: cookie
+        key: "_ec_"
+        condition: contains
+        confidence: 0.25
