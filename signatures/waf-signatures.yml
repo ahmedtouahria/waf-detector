@@ -693,6 +693,453 @@ signatures:
         condition: exists
         confidence: 0.3
 
+  # 360PanYun
+  - name: "360PanYun"
+    enabled: true
+    description: "360 Technologies PanYun WAF"
+    vendor: "360 Technologies"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-Powered-By-360WZB"
+        condition: exists
+        confidence: 0.45
+      - type: header
+        key: "X-WZWS-RAY"
+        condition: exists
+        confidence: 0.4
+      - type: body
+        condition: contains
+        values: ["360panyun", "360wzb"]
+        case_insensitive: true
+        confidence: 0.35
+      - type: cookie
+        key: "qianxin"
+        condition: contains
+        confidence: 0.3
+
+  # 360WangZhanBao
+  - name: "360WangZhanBao"
+    enabled: true
+    description: "360 Technologies WangZhanBao (Website Protector)"
+    vendor: "360 Technologies"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-Powered-By-360WZB"
+        condition: exists
+        confidence: 0.45
+      - type: header
+        key: "wangzhanbaoCN"
+        condition: exists
+        confidence: 0.4
+      - type: body
+        condition: contains
+        values: ["360wzb", "wangzhan bao", "360 website security"]
+        case_insensitive: true
+        status_codes: [403]
+        confidence: 0.35
+      - type: cookie
+        key: "wzws"
+        condition: contains
+        confidence: 0.3
+
+  # ACE XML Gateway
+  - name: "ACE XML Gateway"
+    enabled: true
+    description: "Cisco ACE XML Gateway"
+    vendor: "Cisco"
+    category: "appliance"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "Server"
+        condition: contains
+        values: ["ACE XML Gateway", "cisco-ace"]
+        case_insensitive: true
+        confidence: 0.45
+      - type: body
+        condition: contains
+        values: ["ace xml gateway", "cisco ace"]
+        case_insensitive: true
+        confidence: 0.35
+
+  # ASP.NET Generic
+  - name: "ASP.NET Generic Protection"
+    enabled: true
+    description: "Microsoft ASP.NET Generic Error Protection"
+    vendor: "Microsoft"
+    category: "framework"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-AspNet-Version"
+        condition: exists
+        confidence: 0.3
+      - type: header
+        key: "X-Powered-By"
+        condition: contains
+        value: "ASP.NET"
+        case_insensitive: true
+        confidence: 0.25
+      - type: body
+        condition: contains
+        values: ["runtime error", "server error in", "asp.net"]
+        case_insensitive: true
+        status_codes: [500, 403]
+        confidence: 0.35
+
+  # ASPA Firewall
+  - name: "ASPA Firewall"
+    enabled: true
+    description: "ASPA Engineering Web Application Firewall"
+    vendor: "ASPA Engineering Co."
+    category: "appliance"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-ASPA-ID"
+        condition: exists
+        confidence: 0.45
+      - type: body
+        condition: contains
+        values: ["aspa firewall", "aspa engineering"]
+        case_insensitive: true
+        confidence: 0.4
+
+  # AWS Elastic Load Balancer
+  - name: "AWS Elastic Load Balancer"
+    enabled: true
+    description: "Amazon Elastic Load Balancer"
+    vendor: "Amazon"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "Server"
+        condition: contains
+        values: ["awselb", "elb"]
+        case_insensitive: true
+        confidence: 0.4
+      - type: header
+        key: "X-AMZ-"
+        condition: exists
+        confidence: 0.35
+      - type: body
+        condition: contains
+        values: ["elastic load balancing", "elb"]
+        case_insensitive: true
+        confidence: 0.3
+
+  # AireeCDN
+  - name: "AireeCDN"
+    enabled: true
+    description: "Airee CDN and WAF"
+    vendor: "Airee"
+    category: "cdn"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "airee"
+        case_insensitive: true
+        confidence: 0.4
+      - type: header
+        key: "X-Airee"
+        condition: exists
+        confidence: 0.45
+      - type: body
+        condition: contains
+        value: "airee"
+        case_insensitive: true
+        confidence: 0.3
+
+  # Airlock
+  - name: "Airlock"
+    enabled: true
+    description: "Phion/Ergon Airlock WAF"
+    vendor: "Phion/Ergon"
+    category: "appliance"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "airlock"
+        case_insensitive: true
+        confidence: 0.45
+      - type: cookie
+        key: "AL_SESS"
+        condition: contains
+        confidence: 0.4
+      - type: cookie
+        key: "AL-LB"
+        condition: contains
+        confidence: 0.4
+      - type: body
+        condition: contains
+        values: ["airlock", "ergon"]
+        case_insensitive: true
+        confidence: 0.35
+
+  # Alert Logic
+  - name: "Alert Logic"
+    enabled: true
+    description: "Alert Logic Web Application Firewall"
+    vendor: "Alert Logic"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-AlertLogic"
+        condition: exists
+        confidence: 0.45
+      - type: header
+        key: "X-ALERTLOGIC-"
+        condition: exists
+        confidence: 0.4
+      - type: body
+        condition: contains
+        values: ["alert logic", "alertlogic"]
+        case_insensitive: true
+        confidence: 0.35
+
+  # AliYunDun
+  - name: "AliYunDun"
+    enabled: true
+    description: "Alibaba Cloud Computing AliYunDun WAF"
+    vendor: "Alibaba Cloud Computing"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-Alicdn-Cache-Status"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "Ali-Swift-Global-Savetime"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "Server"
+        condition: contains
+        values: ["aliyun", "alibaba"]
+        case_insensitive: true
+        confidence: 0.3
+      - type: body
+        condition: contains
+        values: ["aliyundun", "aliyun", "error by aliyun"]
+        case_insensitive: true
+        status_codes: [403, 405]
+        confidence: 0.35
+
+  # AnYu
+  - name: "AnYu"
+    enabled: true
+    description: "AnYu Technologies WAF"
+    vendor: "AnYu Technologies"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-AnYu"
+        condition: exists
+        confidence: 0.45
+      - type: body
+        condition: contains
+        values: ["anyu", "anyu technologies"]
+        case_insensitive: true
+        confidence: 0.4
+
+  # Anquanbao
+  - name: "Anquanbao"
+    enabled: true
+    description: "Anquanbao Web Application Firewall"
+    vendor: "Anquanbao"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-Anquanbao"
+        condition: exists
+        confidence: 0.45
+      - type: body
+        condition: contains
+        value: "anquanbao"
+        case_insensitive: true
+        confidence: 0.4
+      - type: cookie
+        key: "aqb_"
+        condition: contains
+        confidence: 0.35
+
+  # Armor Defense
+  - name: "Armor Defense"
+    enabled: true
+    description: "Armor Defense Web Application Firewall"
+    vendor: "Armor"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-Armor-"
+        condition: exists
+        confidence: 0.45
+      - type: body
+        condition: contains
+        values: ["armor defense", "armor.com"]
+        case_insensitive: true
+        confidence: 0.35
+
+  # ArvanCloud
+  - name: "ArvanCloud"
+    enabled: true
+    description: "ArvanCloud CDN and WAF"
+    vendor: "ArvanCloud"
+    category: "cdn"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "arvancloud"
+        case_insensitive: true
+        confidence: 0.4
+      - type: header
+        key: "AR-PoweredBy"
+        condition: exists
+        confidence: 0.45
+      - type: cookie
+        key: "__arcsession"
+        condition: contains
+        confidence: 0.35
+      - type: body
+        condition: contains
+        values: ["arvancloud", "arvan"]
+        case_insensitive: true
+        confidence: 0.3
+
+  # Astra
+  - name: "Astra"
+    enabled: true
+    description: "Czar Securities Astra WAF"
+    vendor: "Czar Securities"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-Astra-"
+        condition: exists
+        confidence: 0.45
+      - type: body
+        condition: contains
+        values: ["astra security", "blocked by astra"]
+        case_insensitive: true
+        status_codes: [403]
+        confidence: 0.4
+      - type: cookie
+        key: "astra"
+        condition: contains
+        confidence: 0.35
+
+  # Azion Edge Firewall
+  - name: "Azion Edge Firewall"
+    enabled: true
+    description: "Azion Edge Computing Platform Firewall"
+    vendor: "Azion"
+    category: "cdn"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "azion"
+        case_insensitive: true
+        confidence: 0.4
+      - type: header
+        key: "X-Azion-"
+        condition: exists
+        confidence: 0.45
+      - type: body
+        condition: contains
+        values: ["azion", "edge firewall"]
+        case_insensitive: true
+        confidence: 0.35
+
+  # Azure Application Gateway
+  - name: "Azure Application Gateway"
+    enabled: true
+    description: "Microsoft Azure Application Gateway"
+    vendor: "Microsoft"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-Azure-Ref"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "X-AppGW-"
+        condition: exists
+        confidence: 0.4
+      - type: body
+        condition: contains
+        values: ["azure application gateway", "application gateway"]
+        case_insensitive: true
+        status_codes: [403, 502]
+        confidence: 0.35
+
+  # Azure Front Door
+  - name: "Azure Front Door"
+    enabled: true
+    description: "Microsoft Azure Front Door"
+    vendor: "Microsoft"
+    category: "cdn"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-Azure-Ref"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "X-Azure-OriginStatusCode"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "X-Azure-ExternalError"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "X-FD-"
+        condition: exists
+        confidence: 0.4
+      - type: body
+        condition: contains
+        values: ["azure front door", "frontdoor"]
+        case_insensitive: true
+        confidence: 0.3
+
   # Verizon Digital Media WAF
   - name: "Verizon Digital Media"
     enabled: true
