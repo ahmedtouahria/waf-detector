@@ -24,6 +24,12 @@ func NewDetector() *Detector {
 	}
 }
 
+func NewDetectorWithSignatures(sigs []signatures.Signature) *Detector {
+	return &Detector{
+		signatures: sigs,
+	}
+}
+
 func (d *Detector) Detect(probes map[scanner.ProbeType]*scanner.ProbeResult) Detection {
 	normal := probes[scanner.ProbeNormal]
 	sqli := probes[scanner.ProbeSQLi]

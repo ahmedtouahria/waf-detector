@@ -70,6 +70,7 @@ WAF Detector follows a modular architecture with clear separation of concerns:
 **Responsibilities:**
 - Initialize application
 - Parse command-line flags
+- Load WAF signatures (YAML or defaults)
 - Set up logging
 - Handle graceful shutdown
 - Coordinate worker pool
@@ -80,6 +81,17 @@ WAF Detector follows a modular architecture with clear separation of concerns:
 - `processTargets()`: Manage concurrent scanning
 - `processTarget()`: Process individual target
 
+**Signature Loading Flow:**
+```go
+if config.SignaturesFile != "" {
+    sigs := signatures.GetSignatures(config.SignaturesFile)
+    d = detector.NewDetectorWithSignatures(sigs)
+    logger.Infof("Loaded %d signatures from %s", len(sigs), config.SignaturesFile)
+} else {
+    d = detector.NewDetector() // Uses hardcoded signatures
+}
+```
+
 ### 2. CLI Parser (`cli/`)
 
 **Responsibilities:**
@@ -89,6 +101,14 @@ WAF Detector follows a modular architecture with clear separation of concerns:
 
 **Key Structures:**
 - `Config`: Holds all configuration options
+
+**Key Flags:**
+- `-u, --url`: Single target URL
+- `-l, --list`: File with target URLs
+- `-s, --signatures`: Custom WAF signatures file (YAML)
+- `-t, --threads`: Number of concurrent workers
+- `-o, --output`: Output file path
+- `-f, --format`: Output format (txt|json|csv|html)
 
 ### 3. Scanner (`scanner/`)
 
@@ -114,6 +134,7 @@ WAF Detector follows a modular architecture with clear separation of concerns:
 - Analyze probe results
 - Match WAF signatures
 - Calculate confidence scores
+- Support custom signature injection
 
 **Detection Strategy:**
 1. **Behavior Analysis**: Compare probe responses
@@ -125,18 +146,88 @@ WAF Detector follows a modular architecture with clear separation of concerns:
 - `detectWAFBehavior()`: Analyze response patterns
 - `fingerprint()`: Match signatures
 
+**Constructors:**
+- `NewDetector()`: Creates detector with default hardcoded signatures
+- `NewDetectorWithSignatures(sigs)`: Creates detector with custom signatures (YAML)
+
 ### 5. Signatures (`signatures/`)
 
-**Responsibilities:**
-- Define WAF patterns
-- Provide signature database
+**New Architecture: YAML-Based Signature System**
 
-**Signature Components:**
-- Name: WAF vendor/product name
-- Patterns: Regex patterns for matching
-- Headers: Expected HTTP headers
-- Cookies: Expected cookies
-- Body: Response body patterns
+**Responsibilities:**
+- Define WAF detection patterns
+- Load signatures from YAML files
+- Provide signature interface
+- Fallback to hardcoded signatures
+
+**Components:**
+
+**5.1. Signature Interface:**
+```go
+type Signature interface {
+    Name() string
+    Match(probes map[ProbeType]*ProbeResult) float64
+}
+```
+
+**5.2. YAML Signature Structure:**
+```yaml
+signatures:
+  - name: "CloudFlare"
+    enabled: true
+    description: "Cloudflare Web Application Firewall"
+    vendor: "Cloudflare"
+    category: "CDN WAF"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        name: "Server"
+        condition: contains
+        value: "cloudflare"
+        confidence: 0.5
+      - type: header
+        name: "CF-RAY"
+        condition: exists
+        confidence: 0.6
+```
+
+**5.3. Indicator Types:**
+- `header`: Match HTTP response headers
+- `cookie`: Match Set-Cookie patterns
+- `body`: Match response body content
+- `status_code`: Match HTTP status codes
+
+**5.4. Indicator Conditions:**
+- `exists`: Key/field exists
+- `contains`: Value contains pattern (case-insensitive)
+- `equals`: Exact match (case-insensitive)
+- `regex`: Regular expression (future enhancement)
+
+**5.5. Confidence Scoring:**
+- Each indicator has weight (0.0 - 1.0)
+- Scores accumulated across all matching indicators
+- `minimum_indicators`: Required matches for reliable detection
+- `confidence_multiplier`: Penalty factor when below minimum
+- Final confidence capped at 1.0
+
+**5.6. Key Files:**
+- `signatures.go`: Interface definition and hardcoded fallback
+- `loader.go`: YAML parsing and signature loading
+- `waf-signatures.yml`: Default signature library (10+ WAFs)
+
+**5.7. Key Functions:**
+- `GetAllSignatures()`: Returns hardcoded default signatures
+- `LoadSignaturesFromYAML(path)`: Parses YAML file into signatures
+- `GetSignatures(yamlPath)`: Returns YAML or defaults with fallback
+- `YAMLSignature.Match()`: Evaluates indicators against probes
+
+**5.8. Benefits:**
+- No recompilation for new WAF signatures
+- Community-contributed signatures
+- Easy customization per target
+- Version control friendly
+- Runtime configuration
 
 ### 6. Output (`output/`)
 
@@ -198,6 +289,64 @@ The application uses a worker pool pattern for concurrent scanning:
 // Worker pool pattern
 for i := 0; i < threads; i++ {
     go worker(targetChan, resultChan)
+}
+```
+
+## Signature Matching Flow
+
+The YAML-based signature system follows this matching flow:
+
+```
+1. Load Signatures
+   ├─ Check if custom YAML file provided (-s flag)
+   │  ├─ YES: LoadSignaturesFromYAML(path)
+   │  │  ├─ Parse YAML file
+   │  │  ├─ Validate structure
+   │  │  └─ Return YAMLSignature slice
+   │  └─ NO: GetAllSignatures() (hardcoded)
+   └─ Fallback to hardcoded on error
+
+2. For Each Target
+   └─ Scanner.Scan()
+      ├─ ProbeNormal
+      ├─ ProbeSQLi
+      ├─ ProbeXSS
+      └─ ProbeMalformed
+
+3. For Each Signature
+   └─ YAMLSignature.Match(probes)
+      ├─ Check if signature enabled
+      ├─ For each indicator:
+      │  ├─ Match header (exists/contains/equals)
+      │  ├─ Match cookie (exists/contains/equals)
+      │  ├─ Match body (contains/equals)
+      │  └─ Match status code (equals)
+      ├─ Accumulate confidence scores
+      ├─ Count matched indicators
+      ├─ Check minimum_indicators requirement
+      ├─ Apply confidence_multiplier if below minimum
+      └─ Cap final confidence at 1.0
+
+4. Select Best Match
+   └─ Signature with highest confidence score
+```
+
+**Example Matching Logic:**
+```go
+// Header indicator: "Server" contains "cloudflare"
+if indicator.Condition == "contains" {
+    if strings.Contains(
+        strings.ToLower(headerValue),
+        strings.ToLower(indicator.Value),
+    ) {
+        confidence += indicator.Confidence
+        matchedCount++
+    }
+}
+
+// Apply penalty if below minimum
+if matchedCount < y.MinimumIndicators {
+    confidence *= y.ConfidenceMultiplier
 }
 ```
 

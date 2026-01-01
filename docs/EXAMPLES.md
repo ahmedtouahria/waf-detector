@@ -31,6 +31,81 @@ waf-detector -l targets.txt
 
 ## Advanced Usage
 
+### Custom YAML Signatures
+
+Use a custom signature file to detect specific WAFs or customize detection logic:
+
+```bash
+waf-detector -u https://example.com -s custom-waf-signatures.yml
+```
+
+**Example custom signature file (`custom-waf-signatures.yml`):**
+```yaml
+signatures:
+  - name: "MyCustomWAF"
+    enabled: true
+    description: "Custom corporate WAF"
+    vendor: "Internal"
+    category: "Enterprise WAF"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        name: "X-Custom-Protection"
+        condition: exists
+        confidence: 0.7
+      - type: header
+        name: "Server"
+        condition: contains
+        value: "custom-waf"
+        confidence: 0.6
+      - type: body
+        condition: contains
+        value: "Request blocked by security policy"
+        confidence: 0.8
+
+  - name: "CloudFlare"
+    enabled: true
+    description: "Cloudflare Web Application Firewall"
+    vendor: "Cloudflare"
+    category: "CDN WAF"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        name: "CF-RAY"
+        condition: exists
+        confidence: 0.6
+      - type: header
+        name: "Server"
+        condition: contains
+        value: "cloudflare"
+        confidence: 0.5
+```
+
+**Output with custom signatures:**
+```
+[INFO] Loaded 2 signatures from custom-waf-signatures.yml
+✓ https://example.com - WAF Detected: MyCustomWAF
+  Confidence: 87.5%
+  Details: Detected via custom indicators
+```
+
+### Disable Specific Signatures
+
+Create a YAML file with only the signatures you want to use, or set `enabled: false` for unwanted signatures:
+
+```yaml
+signatures:
+  - name: "CloudFlare"
+    enabled: true
+    # ... indicators
+
+  - name: "AWS WAF"
+    enabled: false  # This signature will be skipped
+    # ... indicators
+```
+
 ### Custom Thread Count
 
 Scan with 20 concurrent workers:

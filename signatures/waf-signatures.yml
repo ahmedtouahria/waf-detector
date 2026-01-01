@@ -1,0 +1,353 @@
+version: "1.0"
+
+signatures:
+  # Cloudflare WAF
+  - name: "Cloudflare"
+    enabled: true
+    description: "Cloudflare Web Application Firewall"
+    vendor: "Cloudflare"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "CF-Ray"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "CF-Cache-Status"
+        condition: exists
+        confidence: 0.25
+      - type: header
+        key: "CF-Request-ID"
+        condition: exists
+        confidence: 0.2
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "cloudflare"
+        case_insensitive: true
+        confidence: 0.3
+      - type: cookie
+        key: "__cfduid"
+        condition: contains
+        confidence: 0.25
+      - type: cookie
+        key: "cf_clearance"
+        condition: contains
+        confidence: 0.25
+      - type: body
+        condition: contains
+        values: ["attention required", "cloudflare", "ray id:", "cf-ray"]
+        case_insensitive: true
+        status_codes: [403, 503]
+        confidence: 0.3
+      - type: body
+        condition: contains
+        values: ["checking your browser", "ddos protection by cloudflare"]
+        case_insensitive: true
+        confidence: 0.25
+      - type: header
+        key: "CF-Team"
+        condition: exists
+        confidence: 0.15
+      - type: header
+        key: "Expect-CT"
+        condition: exists
+        confidence: 0.15
+
+  # AWS WAF
+  - name: "AWS WAF"
+    enabled: true
+    description: "Amazon Web Services Web Application Firewall"
+    vendor: "Amazon"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-AMZ-ID"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "X-AMZ-Request-ID"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "X-AMZN-RequestID"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "X-AMZN-Trace-ID"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "X-AMZ-CF-ID"
+        condition: exists
+        confidence: 0.3
+      - type: header
+        key: "Server"
+        condition: contains
+        values: ["awselb", "aws", "amazon"]
+        case_insensitive: true
+        confidence: 0.25
+      - type: body
+        condition: contains
+        values: ["request blocked", "aws waf", "requestid"]
+        case_insensitive: true
+        status_codes: [403]
+        confidence: 0.3
+      - type: body
+        condition: contains
+        value: "aws waf"
+        case_insensitive: true
+        confidence: 0.35
+
+  # Akamai
+  - name: "Akamai"
+    enabled: true
+    description: "Akamai Web Application Protector"
+    vendor: "Akamai"
+    category: "cdn"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "akamaighost"
+        case_insensitive: true
+        confidence: 0.4
+      - type: header
+        key: "X-Akamai-Session-Info"
+        condition: exists
+        confidence: 0.35
+      - type: body
+        condition: contains
+        value: "akamai"
+        case_insensitive: true
+        confidence: 0.25
+
+  # Imperva Incapsula
+  - name: "Imperva Incapsula"
+    enabled: true
+    description: "Imperva Incapsula Web Application Firewall"
+    vendor: "Imperva"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-CDN"
+        condition: contains
+        value: "incapsula"
+        case_insensitive: true
+        confidence: 0.4
+      - type: header
+        key: "X-Iinfo"
+        condition: exists
+        confidence: 0.35
+      - type: body
+        condition: contains
+        values: ["incapsula", "imperva"]
+        case_insensitive: true
+        confidence: 0.25
+
+  # F5 BIG-IP
+  - name: "F5 BIG-IP"
+    enabled: true
+    description: "F5 BIG-IP Application Security Manager"
+    vendor: "F5 Networks"
+    category: "appliance"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "Server"
+        condition: contains
+        values: ["bigip", "f5"]
+        case_insensitive: true
+        confidence: 0.4
+      - type: cookie
+        key: "TS"
+        condition: contains
+        status_codes: [403]
+        confidence: 0.3
+
+  # ModSecurity
+  - name: "ModSecurity"
+    enabled: true
+    description: "ModSecurity Open Source WAF"
+    vendor: "Trustwave"
+    category: "opensource"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "Server"
+        condition: contains
+        values: ["mod_security", "modsecurity"]
+        case_insensitive: true
+        confidence: 0.4
+      - type: body
+        condition: contains
+        values: ["mod_security", "modsecurity", "not acceptable"]
+        case_insensitive: true
+        status_codes: [406, 403, 501]
+        confidence: 0.35
+      - type: body
+        condition: contains
+        values: ["reference id", "your access has been blocked"]
+        case_insensitive: true
+        confidence: 0.25
+
+  # Sucuri CloudProxy
+  - name: "Sucuri CloudProxy WAF"
+    enabled: true
+    description: "Sucuri Website Firewall"
+    vendor: "Sucuri"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "sucuri"
+        case_insensitive: true
+        confidence: 0.4
+      - type: header
+        key: "X-Sucuri-ID"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "X-Sucuri-Cache"
+        condition: exists
+        confidence: 0.35
+      - type: body
+        condition: contains
+        values: ["sucuri", "cloudproxy", "access denied - sucuri website firewall"]
+        case_insensitive: true
+        confidence: 0.3
+      - type: cookie
+        key: "sucuri"
+        condition: contains
+        confidence: 0.25
+
+  # Wordfence
+  - name: "Wordfence"
+    enabled: true
+    description: "Wordfence WordPress Security Plugin"
+    vendor: "Defiant"
+    category: "plugin"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: body
+        condition: contains
+        values: ["wordfence", "generated by wordfence", "a potentially unsafe operation has been detected"]
+        case_insensitive: true
+        confidence: 0.4
+      - type: body
+        condition: contains
+        value: "this site is currently unavailable"
+        case_insensitive: true
+        status_codes: [503]
+        confidence: 0.25
+      - type: cookie
+        key: "wfvt_"
+        condition: contains
+        confidence: 0.35
+
+  # Azure WAF
+  - name: "Azure WAF"
+    enabled: true
+    description: "Microsoft Azure Web Application Firewall"
+    vendor: "Microsoft"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-Azure-Ref"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "X-Azure-SocketIP"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "azure"
+        case_insensitive: true
+        confidence: 0.25
+      - type: body
+        condition: contains
+        values: ["azure", "microsoft azure"]
+        case_insensitive: true
+        status_codes: [403]
+        confidence: 0.3
+
+  # Fastly WAF
+  - name: "Fastly WAF"
+    enabled: true
+    description: "Fastly Web Application Firewall"
+    vendor: "Fastly"
+    category: "cdn"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "X-Fastly-Request-ID"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "Fastly-Debug-Digest"
+        condition: exists
+        confidence: 0.35
+      - type: header
+        key: "Via"
+        condition: contains
+        value: "fastly"
+        case_insensitive: true
+        confidence: 0.3
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "fastly"
+        case_insensitive: true
+        confidence: 0.25
+
+  # Wallarm
+  - name: "Wallarm"
+    enabled: true
+    description: "Wallarm AI-Powered WAF"
+    vendor: "Wallarm"
+    category: "cloud"
+    minimum_indicators: 2
+    confidence_multiplier: 0.5
+    indicators:
+      - type: header
+        key: "Server"
+        condition: contains
+        value: "wallarm"
+        case_insensitive: true
+        confidence: 0.4
+      - type: header
+        key: "Via"
+        condition: contains
+        value: "wallarm"
+        case_insensitive: true
+        confidence: 0.35
+      - type: body
+        condition: contains
+        value: "wallarm"
+        case_insensitive: true
+        confidence: 0.3
+      - type: body
+        condition: contains
+        value: "request blocked"
+        case_insensitive: true
+        status_codes: [403]
+        confidence: 0.2

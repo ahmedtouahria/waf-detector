@@ -13,6 +13,7 @@ A fast, efficient, and professional Web Application Firewall (WAF) detection too
 - 🎯 **Accurate Detection**: Uses multiple probe types (normal, SQLi, XSS, malformed) for reliable WAF identification
 - 📊 **Multiple Output Formats**: Support for text, JSON, CSV, and HTML output formats
 - 🔍 **Signature-Based Fingerprinting**: Identifies specific WAF vendors based on response patterns
+- 📝 **YAML Signatures**: Customizable WAF signatures via YAML files - no recompilation needed
 - 🌐 **Flexible Target Input**: Scan single URLs, bulk targets from file, or use config files
 - 🎨 **Beautiful Output**: Enhanced terminal output with colors and progress bars
 - ⚙️ **Configurable**: Extensive configuration via flags, config files, or environment variables
@@ -21,6 +22,7 @@ A fast, efficient, and professional Web Application Firewall (WAF) detection too
 - 🐳 **Docker Support**: Ready-to-use Docker images for containerized deployment
 - 📈 **Progress Tracking**: Real-time progress bars for bulk scanning operations
 - ✅ **Well Tested**: Comprehensive test suite with high coverage
+- 🎭 **Extensible**: Add custom WAF signatures without modifying code
 
 ## Installation
 
@@ -132,6 +134,11 @@ Show version:
 waf-detector --version
 ```
 
+Use custom WAF signatures:
+```bash
+waf-detector -u https://example.com -s custom-signatures.yml
+```
+
 ## Configuration
 
 ### Config File (YAML)
@@ -186,6 +193,7 @@ Options:
   -u, --url string          Single target URL
   -l, --list string         File with list of URLs
   -c, --config string       Config file path (YAML)
+  -s, --signatures string   Custom WAF signatures file (YAML)
   -t, --threads int         Number of concurrent workers (default: 10)
   -o, --output string       Output file path
   -f, --format string       Output format: txt | json | csv | html (default: txt)
@@ -341,13 +349,24 @@ make docker-run
    - Content modifications
    - Error pages
 
-3. **Fingerprinting**: Matches response patterns against known WAF signatures:
-   - Header analysis
-   - Cookie patterns
+3. **Fingerprinting**: Matches response patterns against WAF signatures (hardcoded or YAML):
+   - Header analysis (Server, X-* headers, etc.)
+   - Cookie patterns (session IDs, tracking cookies)
    - Error message matching
-   - Server behavior characteristics
+   - Body content analysis
+   - Status code filtering
 
-4. **Confidence Scoring**: Assigns confidence scores based on match quality
+4. **Confidence Scoring**: Assigns confidence scores based on:
+   - Number of matching indicators
+   - Individual indicator confidence weights
+   - Minimum indicator requirements
+   - Confidence multipliers
+
+5. **Extensibility**: Load custom signatures from YAML files for:
+   - New WAF vendors
+   - Custom detection rules
+   - Fine-tuned confidence scoring
+   - Community-contributed signatures
 
 ## Contributing
 

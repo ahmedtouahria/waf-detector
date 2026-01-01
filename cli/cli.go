@@ -8,19 +8,20 @@ import (
 )
 
 type Config struct {
-	URL         string
-	ListFile    string
-	ConfigFile  string
-	Threads     int
-	OutputFile  string
-	Format      string
-	Timeout     time.Duration
-	Proxy       string
-	UserAgent   string
-	Silent      bool
-	NoColor     bool
-	Debug       bool
-	ShowVersion bool
+	URL            string
+	ListFile       string
+	ConfigFile     string
+	SignaturesFile string
+	Threads        int
+	OutputFile     string
+	Format         string
+	Timeout        time.Duration
+	Proxy          string
+	UserAgent      string
+	Silent         bool
+	NoColor        bool
+	Debug          bool
+	ShowVersion    bool
 }
 
 func ParseFlags() *Config {
@@ -32,6 +33,8 @@ func ParseFlags() *Config {
 	flag.StringVar(&config.ListFile, "list", "", "File with list of URLs")
 	flag.StringVar(&config.ConfigFile, "c", "", "Config file path (YAML)")
 	flag.StringVar(&config.ConfigFile, "config", "", "Config file path (YAML)")
+	flag.StringVar(&config.SignaturesFile, "s", "", "Custom WAF signatures file (YAML)")
+	flag.StringVar(&config.SignaturesFile, "signatures", "", "Custom WAF signatures file (YAML)")
 	flag.IntVar(&config.Threads, "t", 10, "Number of concurrent workers")
 	flag.IntVar(&config.Threads, "threads", 10, "Number of concurrent workers")
 	flag.StringVar(&config.OutputFile, "o", "", "Output file path")

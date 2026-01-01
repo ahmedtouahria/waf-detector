@@ -15,6 +15,7 @@ import (
 	"github.com/ahmedtouahria/waf-detector/logger"
 	"github.com/ahmedtouahria/waf-detector/output"
 	"github.com/ahmedtouahria/waf-detector/scanner"
+	"github.com/ahmedtouahria/waf-detector/signatures"
 	"github.com/schollz/progressbar/v3"
 )
 
@@ -107,7 +108,18 @@ func processTargets(ctx context.Context, targets []string, config *cli.Config) [
 	close(targetChan)
 
 	s := scanner.NewScanner(config)
-	d := detector.NewDetector()
+
+	// Load signatures (YAML or defaults)
+	var d *detector.Detector
+	if config.SignaturesFile != "" {
+		sigs := signatures.GetSignatures(config.SignaturesFile)
+		d = detector.NewDetectorWithSignatures(sigs)
+		if !config.Silent {
+			logger.Infof("Loaded %d signatures from %s", len(sigs), config.SignaturesFile)
+		}
+	} else {
+		d = detector.NewDetector()
+	}
 
 	// Create progress bar for multiple targets
 	var bar *progressbar.ProgressBar
