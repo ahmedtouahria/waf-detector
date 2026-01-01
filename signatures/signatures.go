@@ -1,17 +1,56 @@
 package signatures
 
 import (
+	"embed"
+	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/ahmedtouahria/waf-detector/scanner"
 )
+
+//go:embed waf-signatures.yml
+var embeddedSignatures embed.FS
 
 type Signature interface {
 	Name() string
 	Match(probes map[scanner.ProbeType]*scanner.ProbeResult) float64
 }
 
+// GetAllSignatures loads signatures from YAML (embedded or file), falls back to hardcoded
 func GetAllSignatures() []Signature {
+	// Try to load from embedded YAML first
+	data, err := embeddedSignatures.ReadFile("waf-signatures.yml")
+	if err == nil {
+		if sigs, err := parseSignaturesFromBytes(data); err == nil && len(sigs) > 0 {
+			return sigs
+		}
+	}
+
+	// Try to load from file system (for development)
+	execPath, _ := os.Executable()
+	execDir := filepath.Dir(execPath)
+	possiblePaths := []string{
+		"signatures/waf-signatures.yml",
+		filepath.Join(execDir, "signatures/waf-signatures.yml"),
+		filepath.Join(execDir, "waf-signatures.yml"),
+		"waf-signatures.yml",
+	}
+
+	for _, path := range possiblePaths {
+		if sigs, err := LoadSignaturesFromYAML(path); err == nil && len(sigs) > 0 {
+			return sigs
+		}
+	}
+
+	// Fall back to hardcoded signatures
+	fmt.Fprintln(os.Stderr, "Warning: Could not load YAML signatures, using hardcoded defaults")
+	return getHardcodedSignatures()
+}
+
+// getHardcodedSignatures returns the original hardcoded signatures as fallback
+func getHardcodedSignatures() []Signature {
 	return []Signature{
 		&CloudflareSignature{},
 		&AWSWAFSignature{},

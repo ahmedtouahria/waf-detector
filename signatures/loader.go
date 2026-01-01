@@ -263,6 +263,11 @@ func LoadSignaturesFromYAML(filename string) ([]Signature, error) {
 		return nil, fmt.Errorf("failed to read signatures file: %w", err)
 	}
 
+	return parseSignaturesFromBytes(data)
+}
+
+// parseSignaturesFromBytes parses YAML signature data from bytes
+func parseSignaturesFromBytes(data []byte) ([]Signature, error) {
 	var config SignaturesConfig
 	if err := yaml.Unmarshal(data, &config); err != nil {
 		return nil, fmt.Errorf("failed to parse signatures YAML: %w", err)
