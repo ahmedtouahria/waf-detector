@@ -150,10 +150,6 @@ func writeText(file *os.File, results []Result, config *cli.Config) error {
 }
 
 func PrintResult(result Result, config *cli.Config) {
-	if config.Silent {
-		return
-	}
-
 	if config.Format == "json" {
 		data, _ := json.Marshal(result)
 		fmt.Println(string(data))

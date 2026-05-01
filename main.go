@@ -152,12 +152,10 @@ func processTargets(ctx context.Context, targets []string, config *cli.Config) [
 					results = append(results, result)
 					mu.Unlock()
 
-					if !config.Silent {
-						if bar != nil {
-							bar.Add(1)
-						} else {
-							output.PrintResult(result, config)
-						}
+					if bar != nil {
+						bar.Add(1)
+					} else {
+						output.PrintResult(result, config)
 					}
 				}
 			}
@@ -167,10 +165,13 @@ func processTargets(ctx context.Context, targets []string, config *cli.Config) [
 	wg.Wait()
 
 	// Print results after progress bar completes
-	if bar != nil && !config.Silent {
+	if bar != nil {
 		for _, result := range results {
 			output.PrintResult(result, config)
 		}
+	}
+
+	if !config.Silent {
 		output.PrintSummary(results, config)
 	}
 
